@@ -27,7 +27,8 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.background.workers.BlurWorker
-
+import com.example.background.workers.CleanupWorker
+import com.example.background.workers.SaveImageToFileWorker
 
 class BlurViewModel(application: Application) : ViewModel() {
 
@@ -42,14 +43,40 @@ class BlurViewModel(application: Application) : ViewModel() {
     /**
      * Create the WorkRequest to apply the blur and save the resulting image
      * @param blurLevel The amount to blur the image
+     * 학습 목적이기 때문에 약간 부자연스럽지만 이렇게 작업합니다.
+     * 블러 코드를 세 번 호출하는 것은 블러의 '수준'을 제어하는 입력을 BlurWorker에 입력하는 방식보다 효율이 떨어집니다.
+     * 하지만 WorkManager 체이닝의 유연성을 보여 주기 위해 이렇게 했습니다.
      */
     internal fun applyBlur(blurLevel: Int) {
-        // WorkRequest 유형 1. OneTimeWorkRequest : 한번만 실행할 WorkRequest, 2. PeriodcWorkRequest : 일정주기로 반복할 WorkRequest
-        val blurRequest = OneTimeWorkRequestBuilder<BlurWorker>()
-                            .setInputData(createInputDataForUri())
-                            .build()
+        // CleanupWorker WorkRequest, BlurImage WorkRequest, SaveImageToFile WorkRequest의 체인을 만듭니다. BlurImage WorkRequest에 입력을 전달합니다.
 
-        workManager.enqueue(blurRequest)
+        // Add WorkRequest to Cleanup temporary images
+        var continuation = workManager
+            .beginWith(OneTimeWorkRequest
+                .from(CleanupWorker::class.java))
+
+        // Add WorkRequests to blur the image the number of times requested
+        for (i in 0 until blurLevel) {
+            val blurBuilder = OneTimeWorkRequestBuilder<BlurWorker>()
+
+            // Input the Uri if this is the first blur operation
+            // After the first blur operation the input will be the output of previous
+            // blur operations.
+            if (i == 0) {
+                blurBuilder.setInputData(createInputDataForUri())
+            }
+
+            continuation = continuation.then(blurBuilder.build())
+        }
+
+        // Add WorkRequest to save the image to the filesystem
+        val save = OneTimeWorkRequestBuilder<SaveImageToFileWorker>()
+            .build()
+
+        continuation = continuation.then(save)
+
+        // work 시작
+        continuation.enqueue()
     }
 
     private fun uriOrNull(uriString: String?): Uri? {

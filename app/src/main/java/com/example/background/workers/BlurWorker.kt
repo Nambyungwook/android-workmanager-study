@@ -19,6 +19,10 @@ class BlurWorker(context: Context, params: WorkerParameters): Worker(context, pa
 
         makeStatusNotification("Blurring image", appContext)
 
+        // ADD THIS TO SLOW DOWN THE WORKER
+        sleep()
+        // ^^^^
+
         return try {
             if (TextUtils.isEmpty(resourceUri)) {
                 Log.e(TAG, "Invalid input uri")
@@ -34,9 +38,8 @@ class BlurWorker(context: Context, params: WorkerParameters): Worker(context, pa
 
             val outputUri = writeBitmapToFile(appContext, output)
 
-            makeStatusNotification("Output is $outputUri", appContext)
-
             val outputData = workDataOf(KEY_IMAGE_URI to outputUri.toString())
+
             Result.success(outputData)
         } catch (throwable: Throwable) {
             Log.e(TAG, "Error applying blur")
