@@ -34,6 +34,7 @@ WorkInfo 객체
 * WorkInfo : WorkRequest의 현재 상태에 관현 세부정보를 포함한 객체
 * 작업의 상태 - BLOCKED, CANCELLED, ENQUEUED, FAILED, RUNNING, SUCCEEDED
 * WorkRequest가 완료된 경우 작업의 모든 출력 데이터
+* WorkInfo에는 저장된 최종 Data 객체를 가져올 수 있는 getOutputData메소드가 있으며 Kotlin에서는 outputData를 사용하여 메소드에 접근할 수 있음
 * WorkInfo 객체가 포함된 LiveData를 가져와서 WorkRequest의 상태를 가져올 수 있음
 * LiveData<WorkInfo> 객체나 LiveData<List<WorkInfo>> 객체를 가져오는 방법 및 결과
 * ID를 사용하여 작업 가져오기 - getWorkInfoByIdLiveData - 각 WorkRequest에는 WorkManager에서 생성된 고유 ID가 있으며 ID를 사용하여 바로 WorkRequest의 단일 LiveData를 얻을 수 있음

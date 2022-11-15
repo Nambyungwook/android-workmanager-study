@@ -16,6 +16,7 @@
 
 package com.example.background
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
@@ -39,6 +40,16 @@ class BlurActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.goButton.setOnClickListener { viewModel.applyBlur(blurLevel) }
+
+        binding.seeFileButton.setOnClickListener {
+            viewModel.outputUri?.let { currentUri ->
+                val actionView = Intent(Intent.ACTION_VIEW, currentUri)
+                actionView.resolveActivity(packageManager)?.run {
+                    startActivity(actionView)
+                }
+            }
+        }
+
         viewModel.outputWorkInfos.observe(this, workInfosObserver())
     }
 
@@ -52,6 +63,16 @@ class BlurActivity : AppCompatActivity() {
 
             if (workInfo.state.isFinished) {
                 showWorkFinished()
+
+                // WorkInfo가 완료된 경우 workInfo.outputData를 사용하여 출력 데이터를 가져옵니다.
+                // 그런 다음 출력 URI를 가져옵니다. Constants.KEY_IMAGE_URI 키를 사용해 저장된다는 점을 기억
+                val outputImageUri = workInfo.outputData.getString(KEY_IMAGE_URI)
+
+                if (!outputImageUri.isNullOrEmpty()) {
+                    // URI가 비어 있지 않으면 올바르게 저장된 것입니다. outputButton을 표시하고 URI를 사용하여 뷰 모델에서 setOutputUri를 호출합니다.
+                    viewModel.setOutputUri(outputImageUri)
+                    binding.seeFileButton.visibility = View.VISIBLE
+                }
             } else {
                 showWorkInProgress()
             }
