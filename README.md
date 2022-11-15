@@ -22,3 +22,9 @@ WorkManager 작업 체인
 
 * WorkManager를 사용하면 순서대로 실행되거나 동시에 실행되는 별도의 WorkRequest를 만들 수 있음
 * WorkRequest의 출력이 체인 내 다음 WorkRequest의 입력이 됨
+
+고유 작업 체인 (Unique work chains)
+--------------
+* 작업 체인을 한 번에 하나씩만 실행해야 하는 경우에 첫 번째 데이터 동기화가 완료된 후에 새 동기화가 시작되도록 할 수 있음
+* beginWith 대신 beginUniqueWork를 사용하고 고유한 String 이름을 제공
+* 함께 참조하고 쿼리할 수 있도록 전체 작업 요청 체인을 지정
