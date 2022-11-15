@@ -5,12 +5,12 @@ import android.util.Log
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.example.background.OUTPUT_PATH
+import timber.log.Timber
 import java.io.File
 
 /**
  * CleanupWorker는 입력을 받거나 출력을 전달할 필요가 없습니다. 임시 파일이 있으면 항상 삭제합니다.
  */
-private const val TAG = "CleanupWorker"
 class CleanupWorker(
     context: Context,
     params: WorkerParameters
@@ -31,7 +31,7 @@ class CleanupWorker(
                         val name = entry.name
                         if (name.isNotEmpty() && name.endsWith(".png")) {
                             val deleted = entry.delete()
-                            Log.i(TAG, "Deleted $name - $deleted")
+                            Timber.i("Deleted " + name + " - " + deleted)
                         }
                     }
                 }

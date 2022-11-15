@@ -23,6 +23,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.work.WorkInfo
+import com.bumptech.glide.Glide
 import com.example.background.databinding.ActivityBlurBinding
 
 class BlurActivity : AppCompatActivity() {
@@ -32,12 +33,20 @@ class BlurActivity : AppCompatActivity() {
             application
         )
     }
-    private lateinit var binding: ActivityBlurBinding
+    private val binding: ActivityBlurBinding by lazy {
+        ActivityBlurBinding.inflate(layoutInflater)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityBlurBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Image uri should be stored in the ViewModel; put it there then display
+        val imageUriExtra = intent.getStringExtra(KEY_IMAGE_URI)
+        viewModel.setImageUri(imageUriExtra)
+        viewModel.imageUri?.let { imageUri ->
+            Glide.with(this).load(imageUri).into(binding.imageView)
+        }
 
         binding.goButton.setOnClickListener { viewModel.applyBlur(blurLevel) }
 

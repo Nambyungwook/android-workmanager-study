@@ -9,13 +9,13 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.example.background.KEY_IMAGE_URI
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 
 /**
  * SaveImageToFileWorker는 입력과 출력을 처리합니다.
  */
-private const val TAG = "SaveImageToFileWorker"
 class SaveImageToFileWorker(
     context: Context,
     params: WorkerParameters
@@ -45,7 +45,7 @@ class SaveImageToFileWorker(
 
                 Result.success(output)
             } else {
-                Log.e(TAG, "Writing to MediaStore failed")
+                Timber.e("Writing to MediaStore failed")
                 Result.failure()
             }
         } catch (exception: Exception) {
