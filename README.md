@@ -40,3 +40,8 @@ WorkInfo 객체
 * ID를 사용하여 작업 가져오기 - getWorkInfoByIdLiveData - 각 WorkRequest에는 WorkManager에서 생성된 고유 ID가 있으며 ID를 사용하여 바로 WorkRequest의 단일 LiveData를 얻을 수 있음
 * 고유 체인 이름을 사용하여 작업 가져오기 - getWorkInfosForUniqueWorkLiveData - WorkRequest는 고유 체인에 포함될 수 있으며 이 메서드는 고유한 단일 WorkRequests 체인에 있는 모든 작업의 LiveData를 반환
 * 태그를 사용하여 작업 가져오기 - getWorkInfosByTagLiveData - 선택적으로 WorkRequest를 String으로 태그 지정할 수 있으며 동일한 태그를 사용하여 여러 WorkRequest를 태그하여 연결할 수 있음, 이 메서드는 단일 태그의 LiveData를 반환
+
+WorkManager Constrants(제약 조건)
+--------------
+* Constrants 객체를 생성하고 setConstraints()를 사용하여 WorkRequest에 설정할 수 있음
+* 제약 조건의 종류는 네트워크종류, 배터리, 저장공간 등등으로 https://developer.android.com/reference/androidx/work/Constraints.Builder.html?hl=ko서 확인할 수 있음
