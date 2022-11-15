@@ -77,12 +77,18 @@ class BlurViewModel(application: Application) : ViewModel() {
             continuation = continuation.then(blurBuilder.build())
         }
 
+        // 제약조건 추가
+        val constraints = Constraints.Builder()
+            .setRequiresCharging(true)
+            .build()
+
         // Add WorkRequest to save the image to the filesystem
         // WorkManager ID를 사용하는 대신 태그를 사용하여 작업의 라벨을 지정하겠습니다.
         // 왜냐하면 사용자가 여러 이미지를 블러 처리하는 경우 모든 이미지 저장 WorkRequest의 태그가 같지만 ID는 같지 않기 때문입니다. 또한 태그를 선택할 수도 있습니다.
         // getWorkInfosForUniqueWork를 사용하지 않습니다. 모든 블러 WorkRequest 및 정리 WorkRequest의 WorkInfo도 반환하기 때문입니다.
         // (이렇게 반환하려면 이미지 저장 WorkRequest를 찾기 위한 추가 로직이 필요함).
         val save = OneTimeWorkRequestBuilder<SaveImageToFileWorker>()
+            .setConstraints(constraints)
             .addTag(TAG_OUTPUT) // TAG 설정
             .build()
 
