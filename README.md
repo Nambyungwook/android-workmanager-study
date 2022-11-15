@@ -28,3 +28,14 @@ WorkManager 작업 체인
 * 작업 체인을 한 번에 하나씩만 실행해야 하는 경우에 첫 번째 데이터 동기화가 완료된 후에 새 동기화가 시작되도록 할 수 있음
 * beginWith 대신 beginUniqueWork를 사용하고 고유한 String 이름을 제공
 * 함께 참조하고 쿼리할 수 있도록 전체 작업 요청 체인을 지정
+
+WorkInfo 객체
+--------------
+* WorkInfo : WorkRequest의 현재 상태에 관현 세부정보를 포함한 객체
+* 작업의 상태 - BLOCKED, CANCELLED, ENQUEUED, FAILED, RUNNING, SUCCEEDED
+* WorkRequest가 완료된 경우 작업의 모든 출력 데이터
+* WorkInfo 객체가 포함된 LiveData를 가져와서 WorkRequest의 상태를 가져올 수 있음
+* LiveData<WorkInfo> 객체나 LiveData<List<WorkInfo>> 객체를 가져오는 방법 및 결과
+* ID를 사용하여 작업 가져오기 - getWorkInfoByIdLiveData - 각 WorkRequest에는 WorkManager에서 생성된 고유 ID가 있으며 ID를 사용하여 바로 WorkRequest의 단일 LiveData를 얻을 수 있음
+* 고유 체인 이름을 사용하여 작업 가져오기 - getWorkInfosForUniqueWorkLiveData - WorkRequest는 고유 체인에 포함될 수 있으며 이 메서드는 고유한 단일 WorkRequests 체인에 있는 모든 작업의 LiveData를 반환
+* 태그를 사용하여 작업 가져오기 - getWorkInfosByTagLiveData - 선택적으로 WorkRequest를 String으로 태그 지정할 수 있으며 동일한 태그를 사용하여 여러 WorkRequest를 태그하여 연결할 수 있음, 이 메서드는 단일 태그의 LiveData를 반환

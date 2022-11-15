@@ -20,6 +20,7 @@ import android.app.Application
 import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.work.*
@@ -34,8 +35,11 @@ class BlurViewModel(application: Application) : ViewModel() {
     internal var imageUri: Uri? = null
     internal var outputUri: Uri? = null
 
+    internal val outputWorkInfos: LiveData<List<WorkInfo>>
+
     init {
         imageUri = getImageUri(application.applicationContext)
+        outputWorkInfos = workManager.getWorkInfosByTagLiveData(TAG_OUTPUT)
     }
     /**
      * Create the WorkRequest to apply the blur and save the resulting image
@@ -74,7 +78,12 @@ class BlurViewModel(application: Application) : ViewModel() {
         }
 
         // Add WorkRequest to save the image to the filesystem
+        // WorkManager ID를 사용하는 대신 태그를 사용하여 작업의 라벨을 지정하겠습니다.
+        // 왜냐하면 사용자가 여러 이미지를 블러 처리하는 경우 모든 이미지 저장 WorkRequest의 태그가 같지만 ID는 같지 않기 때문입니다. 또한 태그를 선택할 수도 있습니다.
+        // getWorkInfosForUniqueWork를 사용하지 않습니다. 모든 블러 WorkRequest 및 정리 WorkRequest의 WorkInfo도 반환하기 때문입니다.
+        // (이렇게 반환하려면 이미지 저장 WorkRequest를 찾기 위한 추가 로직이 필요함).
         val save = OneTimeWorkRequestBuilder<SaveImageToFileWorker>()
+            .addTag(TAG_OUTPUT) // TAG 설정
             .build()
 
         continuation = continuation.then(save)
